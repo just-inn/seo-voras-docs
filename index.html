@@ -244,34 +244,34 @@
 
         <section>
             <h2>Architecture</h2>
-            <p>Each employee has their own Google Sheet file (e.g., <strong>Jonas_December</strong>, <strong>Ona_December</strong>). They fill in article info and upload Word + JPG files to their own Drive folder.</p>
+            <p>Each employee has their own Google Sheet file (e.g., <strong>Jonas</strong>, <strong>Ona</strong>). They fill in article info and upload Word + JPG files to their own Drive folder.</p>
 
             <div class="two-tabs">
                 <div class="tab-box draft">
-                    <h4>"Draft" Tab</h4>
-                    <p>Employee works here, fills in info</p>
+                    <h4>Employee Sheet</h4>
+                    <p>Fill in info, mark status as "Complete" when ready</p>
                 </div>
                 <div class="tab-box ready">
-                    <h4>"Ready" Tab</h4>
-                    <p>100% complete rows moved here</p>
+                    <h4>Master Sheet</h4>
+                    <p>Auto-pulls "Complete" rows. Monthly tabs (Dec, Jan...)</p>
                 </div>
             </div>
 
-            <p>The script <strong>only</strong> looks at the "Ready" tab - this prevents sending incomplete entries.</p>
+            <p>No copy-pasting between tabs - just change the status. Laura reviews in Master Sheet before sending.</p>
         </section>
 
         <section>
             <h2>How It Works</h2>
 
             <h3>1. Sending</h3>
-            <p>Laura clicks "Send Now" button (in Google Sheet or simple web page).</p>
+            <p>Laura reviews "Complete" rows in Master Sheet, then clicks "Send Now" button.</p>
 
             <div class="flow-diagram">
                 Laura clicks "Send"<br>
                 <span class="arrow">  ↓</span><br>
-                Script checks all employees' "Ready" tabs<br>
+                Script processes selected rows from Master Sheet<br>
                 <span class="arrow">  ↓</span><br>
-                Finds matching Word + JPG files in Drive folder (by title)<br>
+                Finds matching Word + JPG files in employee's Drive folder (by title)<br>
                 <span class="arrow">  ↓</span><br>
                 Composes email using template (LT or EN, based on file)<br>
                 <span class="arrow">  ↓</span><br>
@@ -321,13 +321,19 @@
 
             <p>If amounts don't match - marks as <span class="warning">"Manual Review Required"</span>.</p>
 
-            <h3>5. Master View</h3>
-            <p>Separate read-only Sheet that automatically aggregates all employees' data in one place - for overview, reporting, and invoice reconciliation.</p>
+            <h3>5. Master Sheet</h3>
+            <p>Central Sheet with monthly tabs (December, January, etc.) that automatically pulls "Complete" rows from all employee sheets. Laura uses this for:</p>
+            <ul>
+                <li>Reviewing before sending</li>
+                <li>Tracking sent status</li>
+                <li>Invoice reconciliation</li>
+                <li>Reporting</li>
+            </ul>
         </section>
 
         <section>
             <h2>Mapping File</h2>
-            <p>A simple lookup table needs to be created:</p>
+            <p>A simple lookup table for portal contacts:</p>
 
             <table>
                 <thead>
@@ -335,7 +341,6 @@
                         <th>Portal</th>
                         <th>Email for sending</th>
                         <th>Email invoices come from</th>
-                        <th>Expected price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -343,18 +348,16 @@
                         <td>Portal X</td>
                         <td>editor@portalx.lt</td>
                         <td>accounting@portalx.lt</td>
-                        <td>€50</td>
                     </tr>
                     <tr>
                         <td>Portal Y</td>
                         <td>info@portaly.lt</td>
                         <td>info@portaly.lt</td>
-                        <td>€30</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>Once filled in - script can automatically identify invoice sender and expected amounts.</p>
+            <p>Prices are tracked per row in the Master Sheet (not in mapping file - prices can vary per article).</p>
         </section>
 
         <section>
@@ -421,7 +424,7 @@
         </section>
 
         <footer>
-            <p>SEOvoras &copy; 2024</p>
+            <p>SEOvoras &copy; 2025</p>
         </footer>
     </div>
 </body>
