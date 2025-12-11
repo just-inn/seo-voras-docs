@@ -202,8 +202,8 @@
             text-transform: uppercase;
         }
 
-        .status-waiting {
-            background: #ffa726;
+        .status-ready {
+            background: #8bc34a;
             color: #2d2d2d;
         }
 
@@ -272,6 +272,75 @@
         .check {
             color: #8bc34a;
         }
+
+        .key-decisions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .key-decision {
+            background: #2d2d2d;
+            padding: 18px;
+            border-radius: 4px;
+            border-left: 3px solid #8bc34a;
+        }
+
+        .key-decision strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .key-decision p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .workflow-step {
+            background: #2d2d2d;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .workflow-step .num {
+            background: #8bc34a;
+            color: #2d2d2d;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .ascii-diagram {
+            background: #2d2d2d;
+            border-radius: 4px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
+            border-left: 3px solid #8bc34a;
+        }
     </style>
 </head>
 <body>
@@ -284,50 +353,123 @@
         <section>
             <h2>About</h2>
             <p>Automated system for sending article placement requests to publishers and tracking invoices.</p>
-        </section>
 
-        <section>
-            <h2>Architecture</h2>
-            <p>Each employee has their own Google Sheet file (e.g., <strong>Jonas</strong>, <strong>Ona</strong>). They fill in article info and upload Word + JPG files to their own Drive folder.</p>
-
-            <div class="two-tabs">
-                <div class="tab-box draft">
-                    <h4>Employee Sheet</h4>
-                    <p>Fill in info, mark status as "Complete" when ready</p>
+            <div class="key-decisions">
+                <div class="key-decision">
+                    <strong>Decentralized</strong>
+                    <p>Each employee manages their own Google Sheet</p>
                 </div>
-                <div class="tab-box ready">
-                    <h4>Master Sheet</h4>
-                    <p>Auto-pulls "Complete" rows. Monthly tabs (Dec, Jan...)</p>
+                <div class="key-decision">
+                    <strong>Shared Gmail</strong>
+                    <p>All employees send from one Gmail account</p>
+                </div>
+                <div class="key-decision">
+                    <strong>Master Sheet</strong>
+                    <p>Single source of truth for queue, matching, audit</p>
+                </div>
+                <div class="key-decision">
+                    <strong>AI-Powered</strong>
+                    <p>Gemini 2.5 Flash extracts invoice data from PDFs</p>
                 </div>
             </div>
 
-            <p>No copy-pasting between tabs - just change the status. Laura reviews in Master Sheet before sending.</p>
+            <div class="cost-total">
+                Cost: ~€6-14/month
+            </div>
         </section>
 
         <section>
-            <h2>How It Works</h2>
+            <h2>System Overview</h2>
 
-            <h3>1. Sending</h3>
-            <p>Laura reviews "Complete" rows in Master Sheet, then clicks "Send Now" button.</p>
+            <div class="ascii-diagram">Employee Sheets                      Master Sheet                        Gmail
+┌─────────────────┐                 ┌────────────────────────┐          ┌──────┐
+│ Employee A      │                 │ [Settings] [Portals]   │          │      │
+│ (single tab,    │  [Submit to     │ [Processed] [Dec] ...  │          │      │
+│  all months)    │   Queue] ────►  │                        │          │      │
+├─────────────────┤                 │ • Global Queue         │ ─Send──► │      │
+│ Employee B      │  ─────────────► │ • Invoice Matching     │          │      │
+├─────────────────┤                 │ • Audit Trail          │          │      │
+│ Employee C      │  ─────────────► │ • Employee Registry    │          └──────┘
+└─────────────────┘                 └────────────────────────┘               │
+        ▲                                    │ ▲                             │
+        │   (via Sheet ID + Row ID)          │ │                             │
+        └──── Status sync back ──────────────┘ │                             │
+                                              │                             │
+                       ┌──────────────────────┴───────────────┐             │
+                       │         Cloud Run (Python)           │             │
+                       │  • Queue processor (every 5-10 min)  │◄────────────┘
+                       │  • Invoice processor                 │  PDF attachments
+                       │  • Gemini 2.5 Flash integration      │
+                       └──────────────────────────────────────┘</div>
 
-            <div class="flow-diagram">
-                Laura clicks "Send"<br>
-                <span class="arrow">  ↓</span><br>
-                Script processes selected rows from Master Sheet<br>
-                <span class="arrow">  ↓</span><br>
-                Finds matching Word + JPG files in employee's Drive folder (by title)<br>
-                <span class="arrow">  ↓</span><br>
-                Composes email using template (LT or EN, based on file)<br>
-                <span class="arrow">  ↓</span><br>
-                Sends email with attachments
+            <p><strong>Master Sheet is the single source of truth</strong> for queue processing, invoice matching, and audit trail.</p>
+        </section>
+
+        <section>
+            <h2>Workflow</h2>
+
+            <div class="workflow-steps">
+                <div class="workflow-step"><span class="num">1</span> Article Prep</div>
+                <div class="workflow-step"><span class="num">2</span> File Matching</div>
+                <div class="workflow-step"><span class="num">3</span> Queue Submit</div>
+                <div class="workflow-step"><span class="num">4</span> Email Sending</div>
+                <div class="workflow-step"><span class="num">5</span> Invoice Detection</div>
+                <div class="workflow-step"><span class="num">6</span> Invoice Processing</div>
+                <div class="workflow-step"><span class="num">7</span> Invoice Matching</div>
             </div>
 
-            <h3>2. Spam Protection</h3>
-            <p>Gmail can block if too many emails sent at once. Script sends gradually:</p>
+            <h3>1. Article Preparation</h3>
+            <p>Each employee works in their own Google Sheet (single tab, all months):</p>
             <ul>
-                <li>20-30 emails per hour</li>
+                <li>Fill in article info (title, portal, price, currency, month)</li>
+                <li>Upload Word + JPG files to their personal Drive folder</li>
+                <li>Set status to "Complete" when ready</li>
+            </ul>
+
+            <h3>2. File Matching</h3>
+            <p>Files matched by <strong>fuzzy title matching</strong> (≥95% similarity):</p>
+            <div class="flow-diagram">
+                Title: "Kiek kainuoja saulės elektrinė?"<br>
+                <span class="arrow">  ↓</span> normalize (lowercase, remove punctuation)<br>
+                "kiek kainuoja saules elektrine"<br>
+                <span class="arrow">  ↓</span> compare to normalized filenames<br>
+                File: "30. Kiek kainuoja saulės elektrinė.docx"<br>
+                <span class="arrow">  ↓</span> similarity ≥ 95%<br>
+                <span class="check">✓ Match</span>
+            </div>
+            <p>Both <code>.docx</code> and image (<code>.jpg</code>, <code>.png</code>) must match. If no match → <span class="warning">error, don't send</span>.</p>
+
+            <h3>3. Queue Submission</h3>
+            <p>Employee clicks <strong>"Submit to Queue"</strong> button:</p>
+            <ul>
+                <li>Script validates row data (required fields)</li>
+                <li>Fuzzy-matches files in Drive folder</li>
+                <li>Copies row to Master Sheet with status "Queued"</li>
+                <li>Records Source Sheet ID + Source Row ID for sync</li>
+            </ul>
+            <p>This is a <strong>push-based</strong> trigger - explicit employee action, no ambiguity about readiness.</p>
+
+            <h3>4. Email Sending</h3>
+            <p>Scheduled job processes Master Sheet queue (Cloud Scheduler, every 5-10 min):</p>
+            <div class="flow-diagram">
+                Find all "Queued" rows (FIFO order)<br>
+                <span class="arrow">  ↓</span><br>
+                Retrieve files from employee's Drive folder<br>
+                <span class="arrow">  ↓</span><br>
+                Compose email using template (LT or EN)<br>
+                <span class="arrow">  ↓</span><br>
+                Send via shared Gmail with attachments<br>
+                <span class="arrow">  ↓</span><br>
+                Update Master Sheet: status "Sent", timestamp, email link<br>
+                <span class="arrow">  ↓</span><br>
+                Sync status back to employee sheet
+            </div>
+
+            <p><strong>Rate Limiting</strong> (configurable in Settings tab):</p>
+            <ul>
+                <li>Default: 20-30 emails per hour</li>
                 <li>Random pause between each (30-90 sec)</li>
-                <li>Progress visible in Sheet</li>
+                <li>First month: start slower (10-15/hour)</li>
             </ul>
 
             <div class="progress-example">
@@ -336,72 +478,153 @@
                 <span>Remaining: <strong class="warning">33</strong></span>
             </div>
 
-            <p><em>First month recommended to start slower (10-15/hour), gradually increase.</em></p>
-
-            <h3>3. Tracking</h3>
-            <p>After sending, each employee's Sheet automatically updates:</p>
-            <ul>
-                <li>Status = "Sent"</li>
-                <li>Date and time</li>
-                <li>Direct link to sent email in Gmail</li>
-            </ul>
-
-            <h3>4. Invoice Matching</h3>
-            <p>Script monitors inbox for incoming invoices. When PDF invoice arrives:</p>
-
+            <h3>5. Invoice Email Detection</h3>
+            <p>Scheduled job scans Gmail for invoice candidates:</p>
             <div class="flow-diagram">
-                Invoice arrives from accounting@portalx.lt, amount €150<br>
+                Gmail query: "has:attachment filename:pdf -label:SEOvoras-Processed"<br>
                 <span class="arrow">  ↓</span><br>
-                Mapping file lookup: accounting@portalx.lt = "Portal X" company<br>
+                For each email: check if already in "Processed Emails" tab<br>
                 <span class="arrow">  ↓</span><br>
-                Search Master Sheet: all rows where Company = "Portal X" AND month = December AND Status = "Sent"<br>
+                Download PDF attachment(s)<br>
                 <span class="arrow">  ↓</span><br>
-                Finds 3 rows: €50 + €50 + €50 = €150<br>
+                Send to Gemini for classification + extraction<br>
                 <span class="arrow">  ↓</span><br>
-                €150 = €150 <span class="check">✓ Match</span><br>
+                Add Gmail label "SEOvoras-Processed"<br>
                 <span class="arrow">  ↓</span><br>
-                Marks those 3 rows: Status = "Invoice Received", invoice number, link to PDF
+                Log to "Processed Emails" tab
             </div>
 
-            <p>If amounts don't match - marks as <span class="warning">"Manual Review Required"</span>.</p>
-
-            <h3>5. Master Sheet</h3>
-            <p>Central Sheet with monthly tabs (December, January, etc.) that automatically pulls "Complete" rows from all employee sheets. Laura uses this for:</p>
+            <h3>6. Invoice Processing</h3>
+            <p><strong>Gemini 2.5 Flash</strong> - single call to classify and extract:</p>
             <ul>
-                <li>Reviewing before sending</li>
-                <li>Tracking sent status</li>
-                <li>Invoice reconciliation</li>
-                <li>Reporting</li>
+                <li>PDF-native processing (~$0.0007/invoice)</li>
+                <li>Returns structured JSON with supplier, line items, totals</li>
+                <li>Extracts portal name, quantity, discount %, amounts</li>
+                <li>If not an invoice → returns <code>{is_invoice: false}</code></li>
             </ul>
+
+            <h3>7. Invoice Matching</h3>
+            <p>Invoices matched at <strong>portal level</strong> (not individual articles):</p>
+            <div class="flow-diagram">
+                Invoice line: Ulac.lt, 7 vnt, €250.25<br>
+                <span class="arrow">  ↓</span><br>
+                Search Master Sheet: Portal = "Ulac.lt" AND Status = "Sent"<br>
+                <span class="arrow">  ↓</span><br>
+                Found 7 rows from 3 employees:<br>
+                &nbsp;&nbsp;Jurgita: 4 × €35.75 = €143.00<br>
+                &nbsp;&nbsp;Jonas:   2 × €35.75 = €71.50<br>
+                &nbsp;&nbsp;Ona:     1 × €35.75 = €35.75<br>
+                &nbsp;&nbsp;Total: €250.25 <span class="check">✓</span><br>
+                <span class="arrow">  ↓</span><br>
+                Mark all 7 rows: Status = "Invoice Received"<br>
+                <span class="arrow">  ↓</span><br>
+                Sync status back to each employee's sheet
+            </div>
+            <p>If count or amount mismatch → <span class="warning">"Manual Review Required"</span></p>
         </section>
 
         <section>
-            <h2>Mapping File</h2>
-            <p>A simple lookup table for portal contacts:</p>
+            <h2>Data Structure</h2>
 
+            <h3>Master Sheet Tabs</h3>
+            <ul>
+                <li><strong>Settings</strong> - Employee registry (Sheet ID, Drive Folder ID, Active), rate limiting config</li>
+                <li><strong>Portals</strong> - Portal contact lookup (email for sending, invoice email)</li>
+                <li><strong>Monthly tabs</strong> - December, January, etc. (the queue)</li>
+                <li><strong>Processed Emails</strong> - Tracks processed email IDs (backup to Gmail labels)</li>
+            </ul>
+
+            <h3>Employee Sheet</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Portal</th>
-                        <th>Email for sending</th>
-                        <th>Email invoices come from</th>
+                        <th>Column</th>
+                        <th>Editable</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Portal X</td>
-                        <td>editor@portalx.lt</td>
-                        <td>accounting@portalx.lt</td>
+                        <td>Row ID</td>
+                        <td>locked</td>
+                        <td>Auto-generated unique ID for sync</td>
                     </tr>
                     <tr>
-                        <td>Portal Y</td>
-                        <td>info@portaly.lt</td>
-                        <td>info@portaly.lt</td>
+                        <td>Month</td>
+                        <td>yes</td>
+                        <td>Target month (dropdown)</td>
+                    </tr>
+                    <tr>
+                        <td>Title</td>
+                        <td>yes</td>
+                        <td>Article title (fuzzy-matched to files)</td>
+                    </tr>
+                    <tr>
+                        <td>Portal</td>
+                        <td>yes</td>
+                        <td>Publisher name (dropdown)</td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td>yes</td>
+                        <td>Article price (before discount)</td>
+                    </tr>
+                    <tr>
+                        <td>Currency</td>
+                        <td>yes</td>
+                        <td>EUR, USD, PLN (dropdown)</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>locked</td>
+                        <td>Draft → Complete → Queued → Sent → Invoice</td>
+                    </tr>
+                    <tr>
+                        <td>Sent At</td>
+                        <td>locked</td>
+                        <td>Auto-filled after sending</td>
+                    </tr>
+                    <tr>
+                        <td>Email Link</td>
+                        <td>locked</td>
+                        <td>Direct Gmail link, auto-filled</td>
+                    </tr>
+                    <tr>
+                        <td>Invoice #</td>
+                        <td>locked</td>
+                        <td>Auto-filled after matching</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>Prices are tracked per row in the Master Sheet (not in mapping file - prices can vary per article).</p>
+            <h3>Portals Tab</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Portal</th>
+                        <th>Email for Sending</th>
+                        <th>Invoice Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ulac.lt</td>
+                        <td>editor@ulac.lt</td>
+                        <td>accounting@ulac.lt</td>
+                    </tr>
+                    <tr>
+                        <td>Foodout.lt</td>
+                        <td>info@foodout.lt</td>
+                        <td>info@foodout.lt</td>
+                    </tr>
+                    <tr>
+                        <td>Nezinau.lt</td>
+                        <td>redakcija@nezinau.lt</td>
+                        <td>buhalterija@nezinau.lt</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Discount % is extracted from each invoice by Gemini (varies by order volume, agreements).</p>
         </section>
 
         <section>
@@ -409,19 +632,34 @@
 
             <div class="tech-grid">
                 <div class="tech-item">
+                    <div class="icon">🐍</div>
+                    <div>Python</div>
+                    <small>Backend</small>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">📜</div>
+                    <div>Apps Script</div>
+                    <small>Sheet buttons, validation</small>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">☁️</div>
+                    <div>Cloud Run</div>
+                    <small>Serverless hosting</small>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">⏰</div>
+                    <div>Cloud Scheduler</div>
+                    <small>Queue triggers</small>
+                </div>
+                <div class="tech-item">
                     <div class="icon">📊</div>
                     <div>Google Workspace</div>
                     <small>Gmail, Sheets, Drive</small>
                 </div>
                 <div class="tech-item">
-                    <div class="icon">☁️</div>
-                    <div>Google Cloud Run</div>
-                    <small>Serverless hosting</small>
-                </div>
-                <div class="tech-item">
-                    <div class="icon">🐍</div>
-                    <div>Python</div>
-                    <small>Gmail, Sheets, Drive APIs</small>
+                    <div class="icon">🤖</div>
+                    <div>Gemini 2.5 Flash</div>
+                    <small>Invoice processing</small>
                 </div>
                 <div class="tech-item">
                     <div class="icon">🔐</div>
@@ -448,8 +686,8 @@
                         <td>€0-2</td>
                     </tr>
                     <tr>
-                        <td>Google APIs</td>
-                        <td>€0</td>
+                        <td>Gemini API (~100 invoices)</td>
+                        <td>~€0.07</td>
                     </tr>
                 </tbody>
             </table>
@@ -462,9 +700,9 @@
         <section>
             <h2>Status</h2>
             <p style="text-align: center; padding: 20px;">
-                <span class="status-badge status-waiting">Waiting for sample data</span>
+                <span class="status-badge status-ready">Sample data received</span>
             </p>
-            <p style="text-align: center;">CSV row + Word + JPG + invoice email needed to build prototype</p>
+            <p style="text-align: center;">Ready to build prototype</p>
         </section>
 
         <footer>
