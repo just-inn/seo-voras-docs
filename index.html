@@ -356,12 +356,12 @@
 
             <div class="key-decisions">
                 <div class="key-decision">
-                    <strong>Decentralized</strong>
+                    <strong>Decentralized Sheets</strong>
                     <p>Each employee manages their own Google Sheet</p>
                 </div>
                 <div class="key-decision">
-                    <strong>Shared Gmail</strong>
-                    <p>All employees send from one Gmail account</p>
+                    <strong>Centralized Storage</strong>
+                    <p>All files in one Drive folder, owned by admin</p>
                 </div>
                 <div class="key-decision">
                     <strong>Master Sheet</strong>
@@ -394,13 +394,21 @@
         ▲                                    │ ▲                             │
         │   (via Sheet ID + Row ID)          │ │                             │
         └──── Status sync back ──────────────┘ │                             │
-                                              │                             │
-                       ┌──────────────────────┴───────────────┐             │
-                       │         Cloud Run (Python)           │             │
-                       │  • Queue processor (every 5-10 min)  │◄────────────┘
-                       │  • Invoice processor                 │  PDF attachments
-                       │  • Gemini 2.5 Flash integration      │
-                       └──────────────────────────────────────┘</div>
+                                               │                             │
+Google Drive                                   │                             │
+┌─────────────────┐                            │                             │
+│ SEOvoras Files/ │ (owned by Master owner)    │                             │
+│  ├── Jurgita/   │◄───────────────────────────┘                             │
+│  ├── Jonas/     │  fetch attachments                                       │
+│  └── Ona/       │                                                          │
+└─────────────────┘                                                          │
+                                                                             │
+                        ┌────────────────────────────────────┐               │
+                        │         Cloud Run (Python)         │               │
+                        │  • Queue processor (every 5-10 min)│◄──────────────┘
+                        │  • Invoice processor               │  PDF attachments
+                        │  • Gemini 2.5 Flash integration    │
+                        └────────────────────────────────────┘</div>
 
             <p><strong>Master Sheet is the single source of truth</strong> for queue processing, invoice matching, and audit trail.</p>
         </section>
@@ -528,11 +536,56 @@
 
             <h3>Master Sheet Tabs</h3>
             <ul>
-                <li><strong>Settings</strong> - Employee registry (Sheet ID, Drive Folder ID, Active), rate limiting config</li>
+                <li><strong>Settings</strong> - Employee registry, rate limiting, system config</li>
                 <li><strong>Portals</strong> - Portal contact lookup (email for sending, invoice email)</li>
                 <li><strong>Monthly tabs</strong> - December, January, etc. (the queue)</li>
                 <li><strong>Processed Emails</strong> - Tracks processed email IDs (backup to Gmail labels)</li>
             </ul>
+
+            <h3>Settings Tab - Employee Registry</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Employee Name</td>
+                        <td>Display name</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>Employee email (for sharing)</td>
+                    </tr>
+                    <tr>
+                        <td>Sheet ID</td>
+                        <td>(auto) - filled by onboarding script</td>
+                    </tr>
+                    <tr>
+                        <td>Folder ID</td>
+                        <td>(auto) - filled by onboarding script</td>
+                    </tr>
+                    <tr>
+                        <td>Active</td>
+                        <td>Checkbox - uncheck to deactivate</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Automated Employee Onboarding</h3>
+            <p>Owner clicks <strong>"Setup New Employees"</strong> button. Script finds rows where Active = ✓ but Sheet ID is empty:</p>
+            <div class="flow-diagram">
+                For each new employee:<br>
+                <span class="arrow">  1.</span> Create subfolder: "SEOvoras Files/{Name}/"<br>
+                <span class="arrow">  2.</span> Create Employee Sheet from template<br>
+                <span class="arrow">  3.</span> Share folder with employee (Editor)<br>
+                <span class="arrow">  4.</span> Share sheet with employee (Editor)<br>
+                <span class="arrow">  5.</span> Fill in Sheet ID and Folder ID<br>
+                <span class="arrow">  6.</span> Show confirmation toast
+            </div>
+            <p><strong>All assets owned by Master Sheet owner</strong> - consistent permissions, centralized control.</p>
 
             <h3>Employee Sheet</h3>
             <table>
