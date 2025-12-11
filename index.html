@@ -156,11 +156,16 @@
         }
 
         .executive-summary .decision-item {
-            display: flex;
+            display: none;
             align-items: flex-start;
             gap: 10px;
             color: #bbbbbb;
             font-size: 0.9rem;
+        }
+
+        body.show-en .executive-summary .decision-item.lang-en,
+        body.show-lt .executive-summary .decision-item.lang-lt {
+            display: flex;
         }
 
         .executive-summary .decision-item::before {
