@@ -692,16 +692,18 @@ Google Drive                                   │                             �
                 <li>Fuzzy-matches files in Drive folder</li>
                 <li>Copies row to Master Sheet with status "Queued"</li>
                 <li>Records Source Sheet ID + Source Row ID for sync</li>
+                <li>Records matched file names with Drive links (for verification)</li>
             </ul>
             <ul class="lang-lt">
                 <li>Skriptas tikrina eilutės duomenis (privalomus laukus)</li>
                 <li>Apytiksliai suderina failus Drive aplanke</li>
                 <li>Kopijuoja eilutę į pagrindinę lentelę su būsena "Queued"</li>
                 <li>Įrašo Source Sheet ID + Source Row ID sinchronizacijai</li>
+                <li>Įrašo suderintų failų pavadinimus su Drive nuorodomis (patikrinimui)</li>
             </ul>
             <p>
                 <span class="lang-en">This is a <strong>push-based</strong> trigger - explicit employee action, no ambiguity about readiness.</span>
-                <span class="lang-lt">Tai <strong>push-based</strong> aktyvatorius - aiškus darbuotojo veiksmas, be neaiškumų dėl paruoštumo.</span>
+                <span class="lang-lt">Tai <strong>push</strong> tipo paleidimas - aiškus darbuotojo veiksmas, nėra abejonių dėl paruoštumo.</span>
             </p>
             </div>
 
@@ -800,7 +802,7 @@ Google Drive                                   │                             �
                 <span class="arrow">  ↓</span><br>
                 Atsisiųsti PDF priedą(-us)<br>
                 <span class="arrow">  ↓</span><br>
-                Siųsti Gemini klasifikavimui + ištraukimui<br>
+                Siųsti Gemini klasifikuoti ir išgauti duomenis<br>
                 <span class="arrow">  ↓</span><br>
                 Pridėti Gmail etiketę "SEOvoras-Processed"<br>
                 <span class="arrow">  ↓</span><br>
@@ -828,7 +830,7 @@ Google Drive                                   │                             �
                 <li>If not an invoice → returns <code>{is_invoice: false}</code></li>
             </ul>
             <ul class="lang-lt">
-                <li>Natyvus PDF apdorojimas (~$0.0007/sąskaita)</li>
+                <li>Tiesioginis PDF apdorojimas (~$0.0007/sąskaita)</li>
                 <li>Grąžina struktūrizuotą JSON su tiekėju, eilutėmis, sumomis</li>
                 <li>Ištraukia portalo pavadinimą, kiekį, nuolaidą %, sumas</li>
                 <li>Jei ne sąskaita → grąžina <code>{is_invoice: false}</code></li>
@@ -932,21 +934,21 @@ Google Drive                                   │                             �
                         <td>Sheet ID</td>
                         <td>
                             <span class="lang-en">(auto) - filled by onboarding script</span>
-                            <span class="lang-lt">(auto) - užpildoma prisijungimo skripto</span>
+                            <span class="lang-lt">(auto) - užpildo prijungimo skriptas</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Folder ID</td>
                         <td>
                             <span class="lang-en">(auto) - filled by onboarding script</span>
-                            <span class="lang-lt">(auto) - užpildoma prisijungimo skripto</span>
+                            <span class="lang-lt">(auto) - užpildo prijungimo skriptas</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Active</td>
                         <td>
                             <span class="lang-en">Checkbox - uncheck to deactivate</span>
-                            <span class="lang-lt">Žymimasis langelis - nuimti kad deaktyvuoti</span>
+                            <span class="lang-lt">Žymimasis langelis - nuimti, norint deaktyvuoti</span>
                         </td>
                     </tr>
                 </tbody>
@@ -1072,6 +1074,28 @@ Google Drive                                   │                             �
                         </td>
                     </tr>
                     <tr>
+                        <td>Matched DOCX</td>
+                        <td>
+                            <span class="lang-en">locked</span>
+                            <span class="lang-lt">užrakinta</span>
+                        </td>
+                        <td>
+                            <span class="lang-en">Drive link to matched Word file</span>
+                            <span class="lang-lt">Drive nuoroda į Word failą</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Matched Image</td>
+                        <td>
+                            <span class="lang-en">locked</span>
+                            <span class="lang-lt">užrakinta</span>
+                        </td>
+                        <td>
+                            <span class="lang-en">Drive link to matched image file</span>
+                            <span class="lang-lt">Drive nuoroda į paveikslėlio failą</span>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>Status</td>
                         <td>
                             <span class="lang-en">locked</span>
@@ -1191,7 +1215,7 @@ Google Drive                                   │                             �
                     <div>Cloud Scheduler</div>
                     <small>
                         <span class="lang-en">Queue triggers</span>
-                        <span class="lang-lt">Eilės aktyvatoriai</span>
+                        <span class="lang-lt">Eilės paleidikliai</span>
                     </small>
                 </div>
                 <div class="tech-item">
